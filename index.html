@@ -1,0 +1,302 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pyscm - @try_enter</title><meta name="description" content="物流搬砖人~"><meta name="keywords" content="供应链网络,python,dash-plotly,零担快运,运输干线,Pandas,车队调度"><meta name="author" content="Pyscm"><meta name="copyright" content="Pyscm"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://zhaojinting.gitee.io/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta property="og:type" content="website"><meta property="og:title" content="Pyscm"><meta property="og:url" content="https://zhaojinting.gitee.io/"><meta property="og:site_name" content="Pyscm"><meta property="og:description" content="物流搬砖人~"><meta property="og:image" content="https://s1.ax1x.com/2022/05/08/O1CXE6.png"><meta property="article:published_time" content="2022-05-22T14:15:24.942Z"><meta property="article:modified_time" content="2022-05-22T14:15:24.942Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: false,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: true,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: true,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false    
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isSidebar: false,
+  postUpdate: '2022-05-22 22:15:24'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sviptzk/HexoStaticFile@master/Hexo/css/flink.min.css"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="https://s1.ax1x.com/2022/05/08/O1CXE6.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">14</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">25</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">7</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/gallery/"><i class="fa-fw far fa-image"></i><span> 相册</span></a></li><li><a class="site-page" href="/home/"><i class="fa-fw fab fa-phoenix-framework"></i><span> 主页</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div id="body-wrap"><div id="web_bg" data-type="photo"></div><header class="full_page" id="page-header"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Pyscm</a></span><span class="pull-right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/gallery/"><i class="fa-fw far fa-image"></i><span> 相册</span></a></li><li><a class="site-page" href="/home/"><i class="fa-fw fab fa-phoenix-framework"></i><span> 主页</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="site-info"><h1 id="site_title">Pyscm</h1><div id="site_subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/papjin" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://zhaojinting.gitee.io/resume.html" target="_blank" title="简历"><i class="fas fa-envelope"></i></a></div></div></header><main class="layout_page" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left_radius"><a href="/posts/%E7%89%A9%E6%B5%81%E9%80%89%E5%9D%80%E9%87%8D%E5%BF%83%E6%B3%95%E9%80%89%E5%9D%80(python%E5%AE%9E%E7%8E%B0)/" title="物流选址重心法选址(python实现)">     <img class="post_bg" src="https://pic1.zhimg.com/v2-32cbf29f90155202bf3fca314475ebed_1440w.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="物流选址重心法选址(python实现)"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/%E7%89%A9%E6%B5%81%E9%80%89%E5%9D%80%E9%87%8D%E5%BF%83%E6%B3%95%E9%80%89%E5%9D%80(python%E5%AE%9E%E7%8E%B0)/" title="物流选址重心法选址(python实现)">物流选址重心法选址(python实现)</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-15 17:29:26"><i class="far fa-calendar-alt"></i>2022-05-15</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E4%BE%9B%E5%BA%94%E9%93%BE/">供应链</a></span></div><div class="content">什么叫重心法?[取自MBA百科]　　重心法(The centre-of-gravity method)是一种设置单个厂房或仓库的方法，这种方法主要考虑的因素是现有设施之间的距离和要运输的货物量，经常用于中间仓库或分销仓库的选择。商品运输量是影响商品运输费用的主要因素，仓库尽可能接近运量较大的网点，从而使较大的商品运量走相对较短的路程，就是求出本地区实际商品运量的重心所在的位置。
+重心法计算公式　　重心法首先要在坐标系中标出各个地点的位置，目的在于确定各点的相对距离。坐标系可以随便建立。在国际选址中，经常采用经度和纬度建立坐标。然后，根据各点在坐标系中的横纵坐标值求出成本运输最低的位置坐标X和Y，重心法使用的公式是：
+
+
+　　公式中
+
+C_x– 重心的x坐标；
+C_y– 重心的y坐标；
+D_ix–第i个地点的x坐标；
+D_iy–第i个地点的y坐标；
+V_i–运到第i个地点或从第i个地点运出的货物量。
+
+　　最后，选择求出的重心点坐标值对应的地点作为要布置设施的地点。
+本文中的重心法计算的假设条件　　重心法是在理想条件下求出的仓库位置，但模型中的假设条件在实际会受到一定的限制。重心法计算中 ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/posts/Conda%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="Conda使用技巧总结">     <img class="post_bg" src="https://pic2.zhimg.com/v2-d756eea109e0bf5fd473cf88c4f95b38_1440w.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Conda使用技巧总结"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/Conda%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="Conda使用技巧总结">Conda使用技巧总结</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-15 13:37:23"><i class="far fa-calendar-alt"></i>2022-05-15</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/python/">python</a></span></div><div class="content">Conda使用技巧总结使用国内镜像下载Python包一般国内镜像有：
+
+豆瓣镜像源：https://pypi.douban.com/simple/
+清华大学镜像源
+华为云镜像源
+阿里云镜像源
+
+临时在使用pip的时候加参数-i例如：pip install pandas==2.10 -i https://pypi.tuna.tsinghua.edu.cn/simple
+使用Miniconda替换Anaconda之前一直使用的是anaconda，使用方便，一些基础包都有，但是随着使用时间，感觉anaconda占用系统空间太大了，后来发现miniconda作用和anaconda一样，安装空间占用只有50M,建议安装miniconda3  64bit python3.7版本的，官网下载安装地址
+下载安装后，配置系统环境12345D:\Miniconda3 D:\Miniconda3\Scripts D:\Miniconda3\Library\bin 将以上miniconda安装包的路径添加到系统环境中，一边我们在cmd中直接可以使用配置步骤：右键-此电脑&gt;属性&gt;高级系统&gt;环境 ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/posts/%E4%BB%80%E4%B9%88%E6%98%AF%E9%9B%B6%E6%8B%85%E8%BF%90%E8%BE%93%EF%BC%9F/" title="什么是零担运输？">     <img class="post_bg" src="https://www.connectioncafe.com/wp-content/uploads/2018/12/What-does-LTL-Freight-Mean-in-Shipping-696x404.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="什么是零担运输？"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/%E4%BB%80%E4%B9%88%E6%98%AF%E9%9B%B6%E6%8B%85%E8%BF%90%E8%BE%93%EF%BC%9F/" title="什么是零担运输？">什么是零担运输？</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-14 21:58:33"><i class="far fa-calendar-alt"></i>2022-05-14</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E7%89%A9%E6%B5%81/">物流</a></span></div><div class="content">美国的运输系统是世界上最大的运输系统之一，每天运送超过 5400 万吨货物。据说它们价值 480 亿美元，相当于每人每年 63 吨货物。然而，根据SCMEDU的说法，随着人口和供应商的增长，这一数字也有望增长。
+如果您喜欢运输货物或想了解更多关于航运业的信息，那么您就来到了正确的页面。我们已经在本文中介绍了有关运输的所有内容，因为我们将更深入地了解LTL 定义和它的其他方面。
+如果您想知道 LTL 代表什么，请不要担心。它的缩写为少于装载，也称为少于卡车运输，是小货物运输的名称。
+此选项有一些替代方案，包括整车承运人和包裹承运人。满载货车使用半挂车将货物从一个地方运送到另一个地方。
+装载货物的拖车在 7.92 至 16.15m 之间。但是，它们需要大量的运费才能使使用它们变得经济可行。
+另一方面，当一个人必须移动小包裹并且可以将货物分成更小的单元时，通常会使用包裹承运人，每个单元的最大重量为 150 磅。
+
+让我们进一步了解 LTL 的含义以及何时可以成为运输货物的好选择：
+LTL 货运在航运中意味着什么？让我们谈谈LTL在航运中的作用。首先，您需要了解 LTL 在运输中的含义。它缩短 ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/posts/2022.5.14%E7%89%A9%E6%B5%81%E4%BC%9A%E8%AE%AEppt%E9%83%A8%E5%88%86%E8%AE%B0%E5%BD%95/" title="2022.5.14物流会议ppt部分记录">     <img class="post_bg" src="https://s1.ax1x.com/2022/05/14/OcTuCj.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2022.5.14物流会议ppt部分记录"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/2022.5.14%E7%89%A9%E6%B5%81%E4%BC%9A%E8%AE%AEppt%E9%83%A8%E5%88%86%E8%AE%B0%E5%BD%95/" title="2022.5.14物流会议ppt部分记录">2022.5.14物流会议ppt部分记录</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-14 20:02:34"><i class="far fa-calendar-alt"></i>2022-05-14</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E7%89%A9%E6%B5%81/">物流</a></span></div><div class="content">
+ppt来源于环球物流咨询，如有侵权，请联系删除
+
+
+</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/posts/%E9%9B%B6%E6%8B%85%E4%B8%8E%E6%95%B4%E8%BD%A6%E7%9A%84%E5%8C%BA%E5%88%AB/" title="零担与整车的区别">     <img class="post_bg" src="https://content.cdntwrk.com/files/aHViPTgyMDA3JmNtZD1pdGVtZWRpdG9yaW1hZ2UmZmlsZW5hbWU9aXRlbWVkaXRvcmltYWdlXzVmMmFmYzIwZDY3MzEucG5nJnZlcnNpb249MDAwMCZzaWc9YzRjMzE1M2Q0ODU1MzMzOTJkNTIyMjEwMWFhNTY4OTQ%253D" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="零担与整车的区别"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/%E9%9B%B6%E6%8B%85%E4%B8%8E%E6%95%B4%E8%BD%A6%E7%9A%84%E5%8C%BA%E5%88%AB/" title="零担与整车的区别">零担与整车的区别</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-13 00:18:19"><i class="far fa-calendar-alt"></i>2022-05-13</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E7%89%A9%E6%B5%81/">物流</a></span></div><div class="content">零担与整车：每个托运人都应该知道的 7 个主要区别LTL，又称零担运输，是几乎每个供应链的重要组成部分。 
+每当您的货物长度为 12 英尺或以下时，零担运输可能是降低成本同时提高效率的好方法。 
+尽管 LTL 和整车 (FTL) 货运之间有许多相似之处，但两种模式之间存在一些重要区别。
+在这篇文章中，您将了解到：
+
+[LTL的基本定义](https://resources.coyote.com/source/how-to-choose-between-full-truckload-ltl-freight#What is LTL)
+[什么时候应该使用 LTL](https://resources.coyote.com/source/how-to-choose-between-full-truckload-ltl-freight#When to use LTL)，什么时候整车是更好的选择 
+这两种模式的相似之处
+零担运输和整车运输之间的7 个主要区别
+
+什么是整车 (FTL)？Full truckload，有时缩写为FTL、TL或OTR（over the road），一般是指半卡车的地面运 ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/posts/%E8%88%AA%E7%A9%BA%E5%AE%A2%E6%88%B7%E6%8C%96%E6%8E%98kmeans%E8%81%9A%E7%B1%BB/" title="航空客户挖掘kmeans聚类">     <img class="post_bg" src="https://s1.ax1x.com/2022/05/12/OD9qUK.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="航空客户挖掘kmeans聚类"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/%E8%88%AA%E7%A9%BA%E5%AE%A2%E6%88%B7%E6%8C%96%E6%8E%98kmeans%E8%81%9A%E7%B1%BB/" title="航空客户挖掘kmeans聚类">航空客户挖掘kmeans聚类</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-12 23:43:27"><i class="far fa-calendar-alt"></i>2022-05-12</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/python/">python</a></span></div><div class="content">简述航空客户数据（CustomOfAir.xlsx），使用python实现kmeans聚类进行数据分析，目标是依据客户的不用维度信息进行聚类挖掘不同价值的客户，这里记一下~（电脑里存货太多😁）
+数据集
+
+
+Id
+R
+F
+M
+
+
+
+inuc001
+21
+17
+1256.47
+
+
+inuc002
+1
+19
+1728.84
+
+
+inuc003
+8
+4
+617.83
+
+
+inuc004
+10
+9
+1380.94
+
+
+inuc005
+4
+3
+1783.68
+
+
+inuc006
+4
+1
+23.24
+
+
+inuc007
+19
+9
+587.24
+
+
+inuc008
+11
+13
+1574.3
+
+
+inuc009
+19
+1
+1898.46
+
+
+inuc010
+8
+1
+953.18
+
+
+…
+…
+…
+…
+
+
+实现
+12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879 ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/posts/networkx%E8%8A%82%E7%82%B9%E5%B1%9E%E6%80%A7%E8%B7%AF%E5%BE%84/" title="networkx计算简单路径对应属性路径">     <img class="post_bg" src="https://s1.ax1x.com/2022/05/12/OBxvm6.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="networkx计算简单路径对应属性路径"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/networkx%E8%8A%82%E7%82%B9%E5%B1%9E%E6%80%A7%E8%B7%AF%E5%BE%84/" title="networkx计算简单路径对应属性路径">networkx计算简单路径对应属性路径</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-12 23:02:50"><i class="far fa-calendar-alt"></i>2022-05-12</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E5%A4%8D%E6%9D%82%E7%BD%91%E7%BB%9C/">复杂网络</a></span></div><div class="content">简述这个demo是2021年5月份闲鱼上接的一个需求，就是计算网络中任意两个节点之间的所有路径，并且还要输出路径对应节点的属性，即属性路径，自己使用过networkx,所以尝试实现了个，当时也是边学变查，这里记一下~（电脑里存货太多😁）
+
+实现
+123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106import networkx as nx#创建对象G= nx.Graph()#插入节点信息G.add_nodes_from([ (1, &#123;'type': 'A1'&#125;), (2, &#123;'type': 'A1'&#125;), (3, &#123;'type': 'A2'&#125;), (4, &#12 ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/posts/%E5%BF%AB%E9%80%92%E7%89%A9%E6%B5%81%E8%BF%90%E8%BE%93%E7%BD%91%E7%BB%9C%E7%9A%84%E4%BB%BF%E7%9C%9F/" title="快递物流运输网络的仿真">     <img class="post_bg" src="http://p4.itc.cn/q_70/images03/20201210/520329fe966b4dfe88e80261228397ec.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="快递物流运输网络的仿真"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/%E5%BF%AB%E9%80%92%E7%89%A9%E6%B5%81%E8%BF%90%E8%BE%93%E7%BD%91%E7%BB%9C%E7%9A%84%E4%BB%BF%E7%9C%9F/" title="快递物流运输网络的仿真">快递物流运输网络的仿真</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-12 22:35:47"><i class="far fa-calendar-alt"></i>2022-05-12</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E7%89%A9%E6%B5%81/">物流</a></span></div><div class="content">好好学习，天天向上，这篇文章是一个很好的学习资料，希望的我的职业生涯中也能复现这样一个小demo☄️
+
+文｜邮政科学研究规划院
+原创 ： 任彪、黄康
+背景：通过设计和应用物流运输网络仿真平台，模拟快递运输网络和快递包裹寄递过程，对运输网络性能进行分析和评估。仿真平台对分拣处理、车辆运输、流量生成等过程进行建模。基于仿真结果，平台不但可以评估网络综合性能指标，而且还可以详细分析网络节点处理能力、线路车辆运输能力、快递全程时效水平，诊断网络性能瓶颈和潜在风险。平台在运输网络的规划和优化中发挥重要作用。
+物流运输网络承担着每天上亿邮件包裹的寄递，对其整体运输性能的分析优化将对全网效益产生积极作用，研究人员采用经验调优、智能网络规划、智能调度等方式对提升网络性能做了大量工作。
+仿真也是分析优化运输网络的一种方式和工具，它把实物网中的处理节点、车辆等实体以及收寄、分拣、转运、运输、投递等功能，通过计算机软件模拟成一张虚拟数字网络。通过仿真批量快递包裹在网络上的寄递过程，分析给定流量流向下的网络节点处理能力、邮路运输能力、快递包裹时效水平，以及平均运时、平均运距等性能指标。
+一、仿真平台的设计（一 ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/posts/%E5%B8%B8%E7%94%A8%E7%9A%84emoj%E7%AC%A6%E5%8F%B7/" title="常用的emoji符号">     <img class="post_bg" src="https://s1.ax1x.com/2022/05/11/OdXb4I.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="常用的emoji符号"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/%E5%B8%B8%E7%94%A8%E7%9A%84emoj%E7%AC%A6%E5%8F%B7/" title="常用的emoji符号">常用的emoji符号</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-11 22:59:08"><i class="far fa-calendar-alt"></i>2022-05-11</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/emoji/">emoji</a></span></div><div class="content">
+常用的emoji符号收藏，方便使用，直接复制粘贴~
+
+表情类😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍 😘 😗 😙 😚 ☺️ 🙂 🤗 🤩 🤔 🤨 😐 😑 😶 🙄 😏 😣 😥 😮 🤐 😯 😪 😫 😴 😌 😛 😜 😝 🤤 😒 😓 😔 😕 🙃 🤑 😲 ☹️ 🙁 😖 😞 😟 😤 😢 😭 😦 😧 😨 😩 🤯 😬 😰 😱 😳 🤪 😵 😡 😠 🤬 😷 🤒 🤕 🤢 🤮 🤧 😇 🤠 🤡 🤥 🤫 🤭 🧐 🤓 😈 👿 👹 👺 💀 👻 👽 🤖 💩 😺 😸 😹 😻 😼 😽 🙀 😿 😾
+
+手势类🤲 👐 🙌 👏 🤝 👍 👎 👊 ✊ 🤛 🤜 🤞 ✌️ 🤟 🤘 👌 👈 👉 👆 👇 ☝️ ✋ 🤚 🖐 🖖 👋 🤙 💪🖕 ✍️ 🙏
+
+人物👶 👧 🧒 👦 👩 🧑 👨 👵 🧓 👴 👲 👳‍♀️ 👳‍♂️ 🧕 🧔 👱‍♂️ 👱‍♀️👮‍♀ ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/posts/pandas%E6%97%A5%E5%B8%B8%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E6%8A%80%E5%B7%A7%E5%B0%8Fdemo%E6%80%BB%E7%BB%93/" title="pandas日常数据处理技巧小demo总结">     <img class="post_bg" src="https://s1.ax1x.com/2022/05/11/OUVwYF.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="pandas日常数据处理技巧小demo总结"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/pandas%E6%97%A5%E5%B8%B8%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E6%8A%80%E5%B7%A7%E5%B0%8Fdemo%E6%80%BB%E7%BB%93/" title="pandas日常数据处理技巧小demo总结">pandas日常数据处理技巧小demo总结</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2022-05-11 22:47:14"><i class="far fa-calendar-alt"></i>2022-05-11</time><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/pandas/">pandas</a></span></div><div class="content">
+记录下日常数据处理常用的pandas函数，方便拿来就用
+后续持续更新~
+
+pandas 利用正则提取多列表中一行存在多个子行，或者其他规则标识的数据字符串，利用正则表达式可以提取想要的内容到多列上
+1234567import pandas as pddf = pd.read_excel("./data/数据拆分多列.xlsx")df[['A', 'B', 'C']] = df['字段1'].str.extract('^A：(.+)\nB：(.+)\nC：(.+)', expand=True)df.head()
+
+
+
+
+
+
+字段1
+A
+B
+C
+
+
+
+A：描述123\nB：描述456\nC：描述789
+描述123
+描述456
+描述789
+
+
+A：描述123\nB：描述456\nC：描述789
+描述123
+描述456
+描述789
+
+
+A：描述123\nB：描述456\nC：描述789
+描述123
+描述456
+描述789
+
+
+pandas实现excel常用vlookup匹配12result = pd.merge(data1,data2, how='left', on=['主键'])resul ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://s1.ax1x.com/2022/05/08/O1CXE6.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">Pyscm</div><div class="author-info__description">物流搬砖人~</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives"><div class="headline">文章</div><div class="length_num">14</div></a></div><div class="card-info-data-item is-center">      <a href="/tags"><div class="headline">标签</div><div class="length_num">25</div></a></div><div class="card-info-data-item is-center">     <a href="/categories"><div class="headline">分类</div><div class="length_num">7</div></a></div></div><div class="card-info-bookmark is-center"><button class="button--animated" id="bookmark-it" type="button" title="加入书签"><i class="fas fa-bookmark"></i><span>加入书签</span></button></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/papjin" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://zhaojinting.gitee.io/resume.html" target="_blank" title="简历"><i class="fas fa-envelope"></i></a></div></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">喜欢用python的物流搬砖人🚀</div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-recent-item"><div class="aside-recent-post"><a href="/posts/%E7%89%A9%E6%B5%81%E9%80%89%E5%9D%80%E9%87%8D%E5%BF%83%E6%B3%95%E9%80%89%E5%9D%80(python%E5%AE%9E%E7%8E%B0)/"><div class="aside-post-cover"><img class="aside-post-bg" src="https://pic1.zhimg.com/v2-32cbf29f90155202bf3fca314475ebed_1440w.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" title="物流选址重心法选址(python实现)" alt="物流选址重心法选址(python实现)"/></div><div class="aside-post-title"><div class="aside-post_title" href="/posts/%E7%89%A9%E6%B5%81%E9%80%89%E5%9D%80%E9%87%8D%E5%BF%83%E6%B3%95%E9%80%89%E5%9D%80(python%E5%AE%9E%E7%8E%B0)/" title="物流选址重心法选址(python实现)">物流选址重心法选址(python实现)</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-15 17:29:26">2022-05-15</time></div></a></div><div class="aside-recent-post"><a href="/posts/Conda%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/"><div class="aside-post-cover"><img class="aside-post-bg" src="https://pic2.zhimg.com/v2-d756eea109e0bf5fd473cf88c4f95b38_1440w.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" title="Conda使用技巧总结" alt="Conda使用技巧总结"/></div><div class="aside-post-title"><div class="aside-post_title" href="/posts/Conda%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="Conda使用技巧总结">Conda使用技巧总结</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-15 13:37:23">2022-05-15</time></div></a></div><div class="aside-recent-post"><a href="/posts/%E4%BB%80%E4%B9%88%E6%98%AF%E9%9B%B6%E6%8B%85%E8%BF%90%E8%BE%93%EF%BC%9F/"><div class="aside-post-cover"><img class="aside-post-bg" src="https://www.connectioncafe.com/wp-content/uploads/2018/12/What-does-LTL-Freight-Mean-in-Shipping-696x404.png" onerror="this.onerror=null;this.src='/img/404.jpg'" title="什么是零担运输？" alt="什么是零担运输？"/></div><div class="aside-post-title"><div class="aside-post_title" href="/posts/%E4%BB%80%E4%B9%88%E6%98%AF%E9%9B%B6%E6%8B%85%E8%BF%90%E8%BE%93%EF%BC%9F/" title="什么是零担运输？">什么是零担运输？</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-14 21:58:33">2022-05-14</time></div></a></div><div class="aside-recent-post"><a href="/posts/2022.5.14%E7%89%A9%E6%B5%81%E4%BC%9A%E8%AE%AEppt%E9%83%A8%E5%88%86%E8%AE%B0%E5%BD%95/"><div class="aside-post-cover"><img class="aside-post-bg" src="https://s1.ax1x.com/2022/05/14/OcTuCj.png" onerror="this.onerror=null;this.src='/img/404.jpg'" title="2022.5.14物流会议ppt部分记录" alt="2022.5.14物流会议ppt部分记录"/></div><div class="aside-post-title"><div class="aside-post_title" href="/posts/2022.5.14%E7%89%A9%E6%B5%81%E4%BC%9A%E8%AE%AEppt%E9%83%A8%E5%88%86%E8%AE%B0%E5%BD%95/" title="2022.5.14物流会议ppt部分记录">2022.5.14物流会议ppt部分记录</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-14 20:02:34">2022-05-14</time></div></a></div><div class="aside-recent-post"><a href="/posts/%E9%9B%B6%E6%8B%85%E4%B8%8E%E6%95%B4%E8%BD%A6%E7%9A%84%E5%8C%BA%E5%88%AB/"><div class="aside-post-cover"><img class="aside-post-bg" src="https://content.cdntwrk.com/files/aHViPTgyMDA3JmNtZD1pdGVtZWRpdG9yaW1hZ2UmZmlsZW5hbWU9aXRlbWVkaXRvcmltYWdlXzVmMmFmYzIwZDY3MzEucG5nJnZlcnNpb249MDAwMCZzaWc9YzRjMzE1M2Q0ODU1MzMzOTJkNTIyMjEwMWFhNTY4OTQ%253D" onerror="this.onerror=null;this.src='/img/404.jpg'" title="零担与整车的区别" alt="零担与整车的区别"/></div><div class="aside-post-title"><div class="aside-post_title" href="/posts/%E9%9B%B6%E6%8B%85%E4%B8%8E%E6%95%B4%E8%BD%A6%E7%9A%84%E5%8C%BA%E5%88%AB/" title="零担与整车的区别">零担与整车的区别</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-13 00:18:19">2022-05-13</time></div></a></div></div></div></div><div class="card-widget card-categories"><div class="card-content"><div class="item-headline"><i class="fas fa-folder-open"></i><span>分类</span></div><ul class="card-category-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/emoji/"><span class="card-category-list-name">emoji</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/pandas/"><span class="card-category-list-name">pandas</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/python/"><span class="card-category-list-name">python</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E4%BE%9B%E5%BA%94%E9%93%BE/"><span class="card-category-list-name">供应链</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E4%BE%9B%E5%BA%94%E9%93%BE%E7%BD%91%E7%BB%9C/"><span class="card-category-list-name">供应链网络</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%A4%8D%E6%9D%82%E7%BD%91%E7%BB%9C/"><span class="card-category-list-name">复杂网络</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%89%A9%E6%B5%81/"><span class="card-category-list-name">物流</span><span class="card-category-list-count">4</span></a></li>
+                       
+            </ul></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href='/tags/Networkx/' style='font-size:21px; color:rgb(103, 149, 3)'>Networkx</a><a href='/tags/conda/' style='font-size:20px; color:rgb(182, 67, 54)'>conda</a><a href='/tags/emoji/' style='font-size:20px; color:rgb(42, 179, 139)'>emoji</a><a href='/tags/folium/' style='font-size:18px; color:rgb(86, 77, 68)'>folium</a><a href='/tags/kmeans/' style='font-size:19px; color:rgb(43, 70, 15)'>kmeans</a><a href='/tags/pandas/' style='font-size:17px; color:rgb(35, 134, 15)'>pandas</a><a href='/tags/python/' style='font-size:19px; color:rgb(170, 58, 155)'>python</a><a href='/tags/%E4%BE%9B%E5%BA%94%E9%93%BE%E7%BD%91%E7%BB%9C/' style='font-size:18px; color:rgb(52, 44, 75)'>供应链网络</a><a href='/tags/%E5%8E%9F%E5%88%9B/' style='font-size:16px; color:rgb(93, 175, 159)'>原创</a><a href='/tags/%E5%8F%AF%E8%A7%86%E5%8C%96/' style='font-size:20px; color:rgb(114, 31, 154)'>可视化</a><a href='/tags/%E5%9C%B0%E5%9B%BE/' style='font-size:19px; color:rgb(128, 86, 135)'>地图</a><a href='/tags/%E5%9F%8E%E5%B8%82%E9%85%8D%E9%80%81/' style='font-size:16px; color:rgb(124, 1, 122)'>城市配送</a><a href='/tags/%E6%95%B4%E8%BD%A6/' style='font-size:16px; color:rgb(161, 30, 148)'>整车</a><a href='/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/' style='font-size:16px; color:rgb(182, 158, 120)'>机器学习</a><a href='/tags/%E7%89%A9%E6%B5%81%E4%BC%9A%E8%AE%AE/' style='font-size:19px; color:rgb(16, 9, 191)'>物流会议</a><a href='/tags/%E7%89%A9%E6%B5%81%E7%BD%91%E7%BB%9C%E8%A7%84%E5%88%92/' style='font-size:16px; color:rgb(17, 48, 38)'>物流网络规划</a><a href='/tags/%E7%89%A9%E6%B5%81%E9%80%89%E5%9D%80/' style='font-size:20px; color:rgb(42, 77, 118)'>物流选址</a><a href='/tags/%E8%B7%AF%E5%BE%84%E4%BC%98%E5%8C%96/' style='font-size:16px; color:rgb(196, 15, 114)'>路径优化</a><a href='/tags/%E8%BD%A6%E8%BE%86%E9%85%8D%E8%BD%BD/' style='font-size:16px; color:rgb(166, 73, 143)'>车辆配载</a><a href='/tags/%E8%BD%A6%E9%98%9F%E8%B0%83%E5%BA%A6/' style='font-size:19px; color:rgb(51, 115, 110)'>车队调度</a><a href='/tags/%E8%BF%90%E8%BE%93%E7%BD%91%E7%BB%9C%E4%BB%BF%E7%9C%9F/' style='font-size:17px; color:rgb(161, 31, 176)'>运输网络仿真</a><a href='/tags/%E8%BF%90%E8%BE%93%E9%85%8D%E9%80%81/' style='font-size:19px; color:rgb(48, 142, 40)'>运输配送</a><a href='/tags/%E9%87%8D%E5%BF%83%E6%B3%95/' style='font-size:19px; color:rgb(28, 183, 77)'>重心法</a><a href='/tags/%E9%9B%B6%E6%8B%85/' style='font-size:18px; color:rgb(150, 168, 131)'>零担</a><a href='/tags/%E9%9B%B6%E6%8B%85%E5%BF%AB%E8%BF%90/' style='font-size:19px; color:rgb(181, 77, 109)'>零担快运</a></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022  <i id="heartbeat" class="fa fas fa-heartbeat"></i> Pyscm</div><div class="framework-info"><span>驱动 </span><a href="https://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener"><span>Butterfly</span></a></div></div><head><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"><meta name="generator" content="Hexo 4.2.0"></head></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="translateLink" type="button" title="简繁转换">簡</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/typed.js"></script><script>var subtitleType = function () {
+  loadScript('https://sdk.jinrishici.com/v2/browser/jinrishici.js',function () {
+      var subtitleEffect = true
+      jinrishici.load(function (result) {
+        if (subtitleEffect) {
+          var sub = "学如逆水行舟&#44;不进则退,Learning is like rowing upstream, not to advance is to fall back".length == 0 ? new Array() : "学如逆水行舟&#44;不进则退,Learning is like rowing upstream, not to advance is to fall back".split(',')
+          var content = result.data.content
+          var both = sub.unshift(content)
+          var typed = new Typed('#subtitle', {
+            strings: sub,
+            startDelay: 300,
+            typeSpeed: 150,
+            loop: true,
+            backSpeed: 50,
+          })
+        } else {
+          document.getElementById('subtitle').innerHTML = result.data.content
+        }
+      })
+    }
+  )
+}
+window.addEventListener('load', subtitleType)
+</script><script src="/js/calendar.js"></script><script src="/js/languages.js"></script></body></html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>物流选址重心法选址(python实现) | Pyscm</title><meta name="description" content="什么叫重心法?[取自MBA百科]　　重心法(The centre-of-gravity method)是一种设置单个厂房或仓库的方法，这种方法主要考虑的因素是现有设施之间的距离和要运输的货物量，经常用于中间仓库或分销仓库的选择。商品运输量是影响商品运输费用的主要因素，仓库尽可能接近运量较大的网点，从而使较大的商品运量走相对较短的路程，就是求出本地区实际商品运量的重心所在的位置。 重心法计算公式"><meta name="keywords" content="物流选址,kmeans,folium"><meta name="author" content="Pyscm"><meta name="copyright" content="Pyscm"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://zhaojinting.gitee.io/posts/%E7%89%A9%E6%B5%81%E9%80%89%E5%9D%80%E9%87%8D%E5%BF%83%E6%B3%95%E9%80%89%E5%9D%80(python%E5%AE%9E%E7%8E%B0)/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta property="og:type" content="article"><meta property="og:title" content="物流选址重心法选址(python实现)"><meta property="og:url" content="https://zhaojinting.gitee.io/posts/%E7%89%A9%E6%B5%81%E9%80%89%E5%9D%80%E9%87%8D%E5%BF%83%E6%B3%95%E9%80%89%E5%9D%80(python%E5%AE%9E%E7%8E%B0)/"><meta property="og:site_name" content="Pyscm"><meta property="og:description" content="什么叫重心法?[取自MBA百科]　　重心法(The centre-of-gravity method)是一种设置单个厂房或仓库的方法，这种方法主要考虑的因素是现有设施之间的距离和要运输的货物量，经常用于中间仓库或分销仓库的选择。商品运输量是影响商品运输费用的主要因素，仓库尽可能接近运量较大的网点，从而使较大的商品运量走相对较短的路程，就是求出本地区实际商品运量的重心所在的位置。 重心法计算公式"><meta property="og:image" content="https://pic1.zhimg.com/v2-32cbf29f90155202bf3fca314475ebed_1440w.jpg"><meta property="article:published_time" content="2022-05-15T09:29:26.820Z"><meta property="article:modified_time" content="2022-05-15T17:15:38.017Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="next" title="Conda使用技巧总结" href="https://zhaojinting.gitee.io/posts/Conda%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: false,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: true,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: true,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false    
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: false,
+  postUpdate: '2022-05-16 01:15:38'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sviptzk/HexoStaticFile@master/Hexo/css/flink.min.css"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="https://s1.ax1x.com/2022/05/08/O1CXE6.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">14</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">25</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">7</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/gallery/"><i class="fa-fw far fa-image"></i><span> 相册</span></a></li><li><a class="site-page" href="/home/"><i class="fa-fw fab fa-phoenix-framework"></i><span> 主页</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div id="body-wrap"><div id="web_bg" data-type="photo"></div><header class="post-bg" id="page-header" style="background-image: url(https://pic1.zhimg.com/v2-32cbf29f90155202bf3fca314475ebed_1440w.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Pyscm</a></span><span class="pull-right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/gallery/"><i class="fa-fw far fa-image"></i><span> 相册</span></a></li><li><a class="site-page" href="/home/"><i class="fa-fw fab fa-phoenix-framework"></i><span> 主页</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">物流选址重心法选址(python实现)</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2022-05-15 17:29:26"><i class="far fa-calendar-alt fa-fw"></i> 发表于 2022-05-15</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2022-05-16 01:15:38"><i class="fas fa-history fa-fw"></i> 更新于 2022-05-16</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E4%BE%9B%E5%BA%94%E9%93%BE/">供应链</a></span></div><div class="meta-secondline"> </div><div class="meta-thirdline"><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta__icon"></i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h3 id="什么叫重心法-取自MBA百科"><a href="#什么叫重心法-取自MBA百科" class="headerlink" title="什么叫重心法?[取自MBA百科]"></a>什么叫重心法?[取自MBA百科]</h3><p>　　重心法(The centre-of-gravity method)是一种设置单个厂房或<a href="https://wiki.mbalib.com/wiki/仓库" target="_blank" rel="noopener">仓库</a>的方法，这种方法主要考虑的因素是现有设施之间的距离和要<a href="https://wiki.mbalib.com/wiki/运输" target="_blank" rel="noopener">运输</a>的货物量，经常用于中间仓库或分销仓库的选择。<a href="https://wiki.mbalib.com/wiki/商品" target="_blank" rel="noopener">商品</a>运输量是影响<a href="https://wiki.mbalib.com/wiki/商品运输费用" target="_blank" rel="noopener">商品运输费用</a>的主要因素，仓库尽可能接近运量较大的网点，从而使较大的商品运量走相对较短的路程，就是求出本地区实际商品运量的重心所在的位置。</p>
+<h3 id="重心法计算公式"><a href="#重心法计算公式" class="headerlink" title="重心法计算公式"></a>重心法计算公式</h3><p>　　重心法首先要在坐标系<a href="https://wiki.mbalib.com/wiki/中标" target="_blank" rel="noopener">中标</a>出各个地点的位置，目的在于确定各点的相对距离。坐标系可以随便建立。在国际选址中，经常采用经度和纬度建立坐标。然后，根据各点在坐标系中的横纵坐标值求出成本运输最低的位置坐标X和Y，重心法使用的公式是：</p>
+<p><img src="https://wiki.mbalib.com/w/images/math/8/c/f/8cf565f04e996619edff1309ca143352.png" alt="C_x=\frac{\sum D_{ix}V_i} {\sum V_i}"></p>
+<p><img src="https://wiki.mbalib.com/w/images/math/b/f/9/bf9a19a5dcc7b48e433dd2a3e0c52e68.png" alt="C_y=\frac{\sum D_{iy}V_i} {\sum V_i}"></p>
+<p>　　公式中</p>
+<ul>
+<li><em>C_x</em>– 重心的x坐标；</li>
+<li><em>C_y</em>– 重心的y坐标；</li>
+<li><em>D_<strong>i</strong>x</em>–第i个地点的x坐标；</li>
+<li><em>D_<strong>i</strong>y</em>–第i个地点的y坐标；</li>
+<li><em>V_i</em>–运到第i个地点或从第i个地点运出的货物量。</li>
+</ul>
+<p>　　最后，选择求出的重心点坐标值对应的地点作为要布置设施的地点。</p>
+<h3 id="本文中的重心法计算的假设条件"><a href="#本文中的重心法计算的假设条件" class="headerlink" title="本文中的重心法计算的假设条件"></a>本文中的重心法计算的假设条件</h3><p>　　重心法是在理想条件下求出的仓库位置，但模型中的假设条件在实际会受到一定的限制。重心法计算中简化的假设条件包括以下几方面：</p>
+<p>　　⑴模型常常假设<a href="https://wiki.mbalib.com/wiki/需求量" target="_blank" rel="noopener">需求量</a>集中于某一点，而实际上<a href="https://wiki.mbalib.com/wiki/需求" target="_blank" rel="noopener">需求</a>来自分散于广阔区域内的多个消费点。</p>
+<p>　　⑵模型没有区分在不同地点建设仓库所需的<a href="https://wiki.mbalib.com/wiki/资本成本" target="_blank" rel="noopener">资本成本</a>，以及与在不同地点<a href="https://wiki.mbalib.com/wiki/经营" target="_blank" rel="noopener">经营</a>有关的其他<a href="https://wiki.mbalib.com/wiki/成本" target="_blank" rel="noopener">成本</a>的差别，而只计算<a href="https://wiki.mbalib.com/wiki/运输成本" target="_blank" rel="noopener">运输成本</a>。</p>
+<p>　　⑶运输成本在公式中是以线性比例随距离增加的，而运费是不随运距变化的固定的部分和随运距变化的可变部分组成。</p>
+<p>　　⑷模型中仓库与其他网络节点之间的路线通常假定为直线。而应该选用的是实际运输所采用的路线。</p>
+<p>　　⑸模型未考虑未来收入和成本的变化。</p>
+<p>　　从以上假设中可以看出模型存在诸多的限制条件，但这也并不意味着模型没有<a href="https://wiki.mbalib.com/wiki/使用价值" target="_blank" rel="noopener">使用价值</a>。重要的是选址模型的结果对事实问题的敏感程度。如果简化假设条件，对模型<a href="https://wiki.mbalib.com/wiki/设施选址" target="_blank" rel="noopener">设施选址</a>的建议影响很小或根本没有影响，那么可以证明简单的模型比复杂的模型更有效。</p>
+<p> 在物流中，重心分析用于通过计算到设施服务的每个供应或需求位置的运输成本来得出仓储设施的理想位置。因此，重心是总运输成本最低的位置。</p>
+<p>从它的名字可以推断，重心分析类似于质心，它的物理和工程对应物，其中质心是分布质量的加权相对位置总和为零的单点。该公式与使用进出仓储设施的运输量而不是物理质心中的分布质量计算的物流重心类似。因此，物理质心或物流重心坐标的公式为：</p>
+<p><img src="https://miro.medium.com/max/203/1*lWP2jVO_Wzn9qykdwcF6mw.png" alt="img"></p>
+<p>其中 x 和 y 是指所服务的 n 个位置的坐标（物理质心的 n 个分布质点的坐标），m 是指输送量（物理质心的质量）。</p>
+<p>然而，将这种理论分析应用于实际问题会迅速变得复杂，因为考虑到现实的假设和业务限制，例如：</p>
+<ol>
+<li><strong>如果需要有多个仓储设施位置怎么办？</strong></li>
+<li><strong>如果进出境运输成本不同怎么办？这是一个现实的假设，因为入站交付成本往往较低，因为物品以散装方式运送到仓库，因此受益于规模经济，而物品则以较少的数量运送给客户或分销商。</strong></li>
+<li><strong>如果企业只有几个可以设置设施的候选地点怎么办？</strong></li>
+<li><strong>我们如何确保所选坐标落在仓库位置的可行位置上，例如该位置不在住宅区或山上或水上？</strong></li>
+</ol>
+<p>对于问题 1 和 2，我们将研究如何使用 K-Means 来获取重心。以下部分包含用于在 Python 中实现此功能的代码。</p>
+<p>对于问题 3 和 4，然后我们将研究如何在 Python 中使用<a href="https://docs.python.org/2/library/itertools.html" target="_blank" rel="noopener">Itertools</a>从一组候选站点中选择重心。最后一部分包括实现这一点的代码。</p>
+<h3 id="对多个设施使用-K-Means"><a href="#对多个设施使用-K-Means" class="headerlink" title="对多个设施使用 K-Means"></a>对多个设施使用 K-Means</h3><p>观察原始数据</p>
+<p>假设我们要使用重心法识别两个仓库位置。上一节中的质心公式将仅提供单个重心，但是，根据其定义为运输成本最小化的点，我们可以使用 K-means 聚类算法来确定将运输最小化的多个位置K-means 聚类的成本是一种无监督学习技术，它可以识别质心，这样每个单独的数据点都会根据离它最近的质心分配一个聚类。为了识别两个仓库位置，我们可以运行 K=2 的 K-means 聚类算法来获得两个质心，使运输距离最小化，从而最小化运输成本。</p>
+<h3 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a><strong>读取数据</strong></h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> combinations </span><br><span class="line"><span class="keyword">from</span> sklearn.cluster <span class="keyword">import</span> KMeans</span><br><span class="line"><span class="keyword">import</span> folium</span><br><span class="line"></span><br><span class="line">data = pd.read_excel(<span class="string">"./数据集/运输节点数据.xlsx"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># data['日均出发']=data['日均出发']+1000</span></span><br><span class="line"><span class="comment"># data['日均到达']=data['日均到达']+1000</span></span><br><span class="line"><span class="comment"># data['出到比']=data['出到比']+1000</span></span><br><span class="line"><span class="comment"># data['经度']=data['经度']+10</span></span><br><span class="line"><span class="comment"># data['纬度']=data['纬度']+10</span></span><br><span class="line">data.head()</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="center">id</th>
+<th align="center">分拨名称</th>
+<th align="center">日均出发</th>
+<th align="center">日均到达</th>
+<th align="center">出到比</th>
+<th align="center">经度</th>
+<th align="center">纬度</th>
+<th align="center">分拨类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">阿坝藏族羌族自治州</td>
+<td align="center">95.215685</td>
+<td align="center">63.876624</td>
+<td align="center">1.490619</td>
+<td align="center">102.221374</td>
+<td align="center">31.899792</td>
+<td align="center">supply</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">安康市</td>
+<td align="center">48.264351</td>
+<td align="center">49.063856</td>
+<td align="center">0.983705</td>
+<td align="center">109.029273</td>
+<td align="center">32.690300</td>
+<td align="center">demand</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">安庆市</td>
+<td align="center">14.747557</td>
+<td align="center">30.851165</td>
+<td align="center">0.478023</td>
+<td align="center">117.043551</td>
+<td align="center">30.508830</td>
+<td align="center">demand</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">安顺市</td>
+<td align="center">122.742896</td>
+<td align="center">161.550340</td>
+<td align="center">0.759781</td>
+<td align="center">105.932188</td>
+<td align="center">26.245544</td>
+<td align="center">supply</td>
+</tr>
+</tbody></table>
+<p>样本数据中包含301个运输节点，我们由二八原则，选取20%数量的物流中心服务于运输网络中的301个运输节点</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">"运输节点数量："</span>,data.shape[<span class="number">0</span>])</span><br><span class="line">print(<span class="string">"帕累托原则："</span>,data.shape[<span class="number">0</span>]*<span class="number">0.2</span>)</span><br><span class="line">运输节点数量： <span class="number">301</span></span><br><span class="line">帕累托原则： <span class="number">60.2</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="地图可视化-运输节点信息1"><a href="#地图可视化-运输节点信息1" class="headerlink" title="地图可视化-运输节点信息1"></a>地图可视化-运输节点信息1</h3><p>下面的代码块使用 Folium 在 Leaflet 地图上绘制站点（候选站点为蓝色，需求站点为红色，供应站点为青色）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Color options</span></span><br><span class="line">color_options = &#123;<span class="string">'demand'</span>: <span class="string">'#ff4500'</span>,</span><br><span class="line">                 <span class="string">'supply'</span>: <span class="string">'#3de1ad'</span>,</span><br><span class="line">                 <span class="string">'flow'</span>: <span class="string">'black'</span>,</span><br><span class="line">                 <span class="string">'cog'</span>: <span class="string">'#fa8072'</span>,</span><br><span class="line">                 <span class="string">'candidate'</span>: <span class="string">'blue'</span>,</span><br><span class="line">                 <span class="string">'other'</span>: <span class="string">'gray'</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#创建一个地图对象</span></span><br><span class="line">map_china = folium.Map(</span><br><span class="line">                location=data[[<span class="string">'纬度'</span>, <span class="string">'经度'</span>]].mean()</span><br><span class="line">                ,fit_bounds=[[data[<span class="string">'纬度'</span>].min(),</span><br><span class="line">                            data[<span class="string">'经度'</span>].min()], </span><br><span class="line">                           [data[<span class="string">'纬度'</span>].max(),</span><br><span class="line">                            data[<span class="string">'经度'</span>].max()]]</span><br><span class="line">               ,tiles=<span class="string">'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;'</span></span><br><span class="line">                ,attr=<span class="string">"&amp;copy; &lt;a href=http://ditu.amap.com/&gt;高德地图-@Pyscm&lt;/a&gt;"</span></span><br><span class="line">               , zoom_start=<span class="number">5</span></span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># V读取中国地图省市区边界</span></span><br><span class="line"><span class="comment"># 下载链接：https://datav.aliyun.com/portal/school/atlas/area_selector</span></span><br><span class="line">vis = os.path.join(<span class="string">'数据集'</span>, <span class="string">'china.json'</span>)</span><br><span class="line">china_border = json.load(open(vis,encoding=<span class="string">"utf-8"</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">#应用地图边界</span></span><br><span class="line">folium.GeoJson(china_border</span><br><span class="line">              , style_function=<span class="keyword">lambda</span> feature: &#123;</span><br><span class="line">        <span class="string">"color"</span>: <span class="string">"blue"</span>,</span><br><span class="line">        <span class="string">"weight"</span>: <span class="number">0.2</span>,</span><br><span class="line">        <span class="string">"dashArray"</span>: <span class="string">"3, 3"</span>,  <span class="comment">#边界线设置</span></span><br><span class="line">    &#125;,  ).add_to(map_china)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                            </span><br><span class="line"><span class="comment"># Add volume points</span></span><br><span class="line"><span class="keyword">for</span> _, row <span class="keyword">in</span> data.iterrows():</span><br><span class="line">    folium.CircleMarker(location=[row[<span class="string">'纬度'</span>], </span><br><span class="line">                                  row[<span class="string">'经度'</span>]],</span><br><span class="line">                        radius=(row[<span class="string">'日均出发'</span>]**<span class="number">0.4</span>),</span><br><span class="line">                        color=color_options.get(str(row[<span class="string">'分拨类型'</span>]).lower(), <span class="string">'gray'</span>),</span><br><span class="line">                        fill_color=color_options.get(str(row[<span class="string">'分拨类型'</span>]).lower(), <span class="string">'gray'</span>),</span><br><span class="line">                        tooltip=str(row[<span class="string">'分拨名称'</span>])+<span class="string">'：'</span>+str(int(row[<span class="string">'日均出发'</span>]))+<span class="string">'吨'</span>).add_to(map_china)</span><br><span class="line"></span><br><span class="line">        </span><br><span class="line"><span class="comment"># 缩放程度根据地图点数</span></span><br><span class="line">map_china.fit_bounds(data[[<span class="string">'纬度'</span>, <span class="string">'经度'</span>]].values.tolist())</span><br><span class="line"><span class="comment"># Show the map</span></span><br><span class="line">map_china</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s1.ax1x.com/2022/05/15/O27GO1.png" alt="O27GO1.png"></p>
+<p>还假设出站和入站运输成本各不相同，从仓库到仓库的交货成本通常较低，因为它们往往会因为规模经济而发生类似的距离。 假设外向交货的成本恰好是内向交货的两倍。在这种情况下，我们需要相应地缩放卷的权重。到需求地点的外向交货乘以 2，而来自供应地点的内向交货保持不变：</p>
+<h3 id="添加业务规则1"><a href="#添加业务规则1" class="headerlink" title="添加业务规则1"></a>添加业务规则1</h3><p>下面的代码块根据我们的原始数据调整了数量，以说明可比较的入站和出站货物之间的成本差异：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The outbound shipments cost twice as much as inbound shipments</span></span><br><span class="line">IB_OB_ratio = <span class="number">2</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loc_type_mult</span><span class="params">(x)</span>:</span></span><br><span class="line">    <span class="string">"""A function to get the volume multiplier based on the location type and the IB-OB ratio.</span></span><br><span class="line"><span class="string">    x: The location type</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">if</span> x.lower() == <span class="string">'supply'</span>:</span><br><span class="line">        <span class="comment"># No need to divide since we are already multiplying the demand</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">elif</span> x.lower() == <span class="string">'demand'</span>:</span><br><span class="line">        <span class="comment"># Only apply multiplier to demand</span></span><br><span class="line">        <span class="keyword">return</span> IB_OB_ratio</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># If neither supply nor demand, remove entirely</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"><span class="comment"># Adjust volumes used in the computation based on IB-OB ratio</span></span><br><span class="line">data[<span class="string">'修正日均出发'</span>] = data[<span class="string">'分拨类型'</span>].apply(str).apply(loc_type_mult)*data[<span class="string">'日均出发'</span>]</span><br><span class="line"></span><br><span class="line">data.head()</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="right">id</th>
+<th align="center">分拨名称</th>
+<th align="center">日均出发</th>
+<th align="center">日均到达</th>
+<th align="center">出到比</th>
+<th align="center">经度</th>
+<th align="center">纬度</th>
+<th align="center">分拨类型</th>
+<th align="center">修正日均出发</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">1</td>
+<td align="center">安康市</td>
+<td align="center">48.264351</td>
+<td align="center">49.063856</td>
+<td align="center">0.983705</td>
+<td align="center">109.029273</td>
+<td align="center">32.690300</td>
+<td align="center">demand</td>
+<td align="center">96.528701</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="center">安庆市</td>
+<td align="center">14.747557</td>
+<td align="center">30.851165</td>
+<td align="center">0.478023</td>
+<td align="center">117.043551</td>
+<td align="center">30.508830</td>
+<td align="center">demand</td>
+<td align="center">29.495114</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="center">安顺市</td>
+<td align="center">122.742896</td>
+<td align="center">161.550340</td>
+<td align="center">0.759781</td>
+<td align="center">105.932188</td>
+<td align="center">26.245544</td>
+<td align="center">supply</td>
+<td align="center">122.742896</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="center">安阳市</td>
+<td align="center">65.513392</td>
+<td align="center">49.091857</td>
+<td align="center">1.334506</td>
+<td align="center">114.352482</td>
+<td align="center">36.103442</td>
+<td align="center">demand</td>
+<td align="center">131.026784</td>
+</tr>
+</tbody></table>
+<h3 id="使用Kmeans聚类"><a href="#使用Kmeans聚类" class="headerlink" title="使用Kmeans聚类"></a>使用Kmeans聚类</h3><p>下面的代码块使用 Scikit-learn 的 K-means 聚类算法实现来获得两个质心作为建议的仓库位置：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Fit K-means for 2 centroids</span></span><br><span class="line">kmeans = KMeans(n_clusters=<span class="number">60</span>,random_state=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">kmeans = kmeans.fit(data.loc[data[<span class="string">'修正日均出发'</span>]&gt;<span class="number">0</span>, [<span class="string">'纬度'</span>, <span class="string">'经度'</span>]],sample_weight=data.loc[data[<span class="string">'修正日均出发'</span>]&gt;<span class="number">0</span>, <span class="string">'修正日均出发'</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># Get centers of gravity from K-means</span></span><br><span class="line">cogs = kmeans.cluster_centers_</span><br><span class="line">cogs = pd.DataFrame(cogs, columns=[<span class="string">'纬度'</span>,<span class="string">'经度'</span>])</span><br><span class="line"><span class="comment"># Get volume assigned to each cluster</span></span><br><span class="line">data[<span class="string">'聚类节点'</span>] = kmeans.predict(data[[<span class="string">'纬度'</span>,<span class="string">'经度'</span>]])</span><br><span class="line">cogs = cogs.join(data.groupby(<span class="string">'聚类节点'</span>)[<span class="string">'日均出发'</span>].sum())</span><br><span class="line"><span class="comment"># Include assigned COG coordinates in data by point </span></span><br><span class="line">data = data.join(cogs, on=<span class="string">'聚类节点'</span>, rsuffix=<span class="string">'_COG'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">data.head()</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="right">id</th>
+<th align="right">分拨名称</th>
+<th align="right">日均出发</th>
+<th align="right">日均到达</th>
+<th align="right">出到比</th>
+<th align="right">经度</th>
+<th align="right">纬度</th>
+<th align="right">分拨类型</th>
+<th align="right">修正日均出发</th>
+<th align="right">聚类节点</th>
+<th align="right">纬度_COG</th>
+<th align="right">经度_COG</th>
+<th align="center">日均出发_COG</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">1</td>
+<td align="right">安康市</td>
+<td align="right">48.264351</td>
+<td align="right">49.063856</td>
+<td align="right">0.983705</td>
+<td align="right">109.029273</td>
+<td align="right">32.690300</td>
+<td align="right">demand</td>
+<td align="right">96.528701</td>
+<td align="right">19</td>
+<td align="right">33.464885</td>
+<td align="right">109.277525</td>
+<td align="center">168.264351</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="right">安庆市</td>
+<td align="right">14.747557</td>
+<td align="right">30.851165</td>
+<td align="right">0.478023</td>
+<td align="right">117.043551</td>
+<td align="right">30.508830</td>
+<td align="right">demand</td>
+<td align="right">29.495114</td>
+<td align="right">4</td>
+<td align="right">30.221152</td>
+<td align="right">117.537599</td>
+<td align="center">195.210201</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="right">安顺市</td>
+<td align="right">122.742896</td>
+<td align="right">161.550340</td>
+<td align="right">0.759781</td>
+<td align="right">105.932188</td>
+<td align="right">26.245544</td>
+<td align="right">supply</td>
+<td align="right">122.742896</td>
+<td align="right">47</td>
+<td align="right">26.561880</td>
+<td align="right">105.039639</td>
+<td align="center">613.526415</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="right">安阳市</td>
+<td align="right">65.513392</td>
+<td align="right">49.091857</td>
+<td align="right">1.334506</td>
+<td align="right">114.352482</td>
+<td align="right">36.103442</td>
+<td align="right">demand</td>
+<td align="right">131.026784</td>
+<td align="right">53</td>
+<td align="right">36.191056</td>
+<td align="right">114.354206</td>
+<td align="center">642.360055</td>
+</tr>
+</tbody></table>
+<h3 id="地图可视化-运输节点归属连接信息"><a href="#地图可视化-运输节点归属连接信息" class="headerlink" title="地图可视化-运输节点归属连接信息"></a>地图可视化-运输节点归属连接信息</h3><p>下面的代码块在 Leaflet 地图上使用 Folium 绘制了生成的重心，以及指示从拟议仓库位置到供需站点的交付路线的线条：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加聚类的点坐标到地图中，并添加连线</span></span><br><span class="line"><span class="keyword">for</span> _, row <span class="keyword">in</span> data.iterrows():</span><br><span class="line">    <span class="comment"># Flow lines</span></span><br><span class="line">    <span class="keyword">if</span> str(row[<span class="string">'分拨类型'</span>]).lower() <span class="keyword">in</span> ([<span class="string">'demand'</span>, <span class="string">'supply'</span>]):</span><br><span class="line">        folium.PolyLine([(row[<span class="string">'纬度'</span>],</span><br><span class="line">                          row[<span class="string">'经度'</span>]),</span><br><span class="line">                         (row[<span class="string">'纬度_COG'</span>],</span><br><span class="line">                          row[<span class="string">'经度_COG'</span>])],</span><br><span class="line">                        color=color_options[<span class="string">'flow'</span>],</span><br><span class="line">                        weight=(row[<span class="string">'日均出发'</span>]**<span class="number">0.3</span>),</span><br><span class="line">                        opacity=<span class="number">0.8</span>).add_to(map_china)</span><br><span class="line">                        </span><br><span class="line"><span class="comment"># Add centers of gravity to map</span></span><br><span class="line"><span class="keyword">for</span> _, row <span class="keyword">in</span> cogs.iterrows():</span><br><span class="line">    <span class="comment"># New centers of gravity</span></span><br><span class="line">    folium.CircleMarker(location=[row[<span class="string">'纬度'</span>],</span><br><span class="line">                                  row[<span class="string">'经度'</span>]],</span><br><span class="line">                        radius=(row[<span class="string">'日均出发'</span>]**<span class="number">0.4</span>),</span><br><span class="line">                        color=color_options[<span class="string">'cog'</span>],</span><br><span class="line">                        fill_color=color_options[<span class="string">'cog'</span>],</span><br><span class="line">                        tooltip=row[<span class="string">'日均出发'</span>]).add_to(map_china)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 展示地图</span></span><br><span class="line">map_china</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s1.ax1x.com/2022/05/15/O27wfe.png" alt="O27wfe.png"></p>
+<p>对于样本数据，算法选择了60个物流中心可视化在地图上</p>
+<h3 id="使用-Itertools-迭代站点的组合"><a href="#使用-Itertools-迭代站点的组合" class="headerlink" title="使用 Itertools 迭代站点的组合"></a>使用 Itertools 迭代站点的组合</h3><p>如果可以放置仓库的位置数量有限怎么办？这可能是由于多种因素造成的：公司可能已经拥有现有的土地，或者他们可能希望避免在住宅区获得推荐。</p>
+<p>我们可以通过为算法引入候选站点来选择仓库位置来改变我们的方法。在下表中，上一节的原始数据已更新为五个候选站点，可以从中选择两个仓库位置：</p>
+<h3 id="读取数据-amp-地图可视化-节点信息可视化"><a href="#读取数据-amp-地图可视化-节点信息可视化" class="headerlink" title="读取数据&amp;地图可视化-节点信息可视化"></a>读取数据&amp;地图可视化-节点信息可视化</h3><p>数据准备基本相同，并由下面的代码块覆盖，以在 Leaflet 地图中显示供应位置（青色）和需求位置（红色）以及候选站点（蓝色）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Import libraries</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="comment"># import matplotlib.pyplot as plt</span></span><br><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> combinations </span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"><span class="keyword">from</span> sklearn.cluster <span class="keyword">import</span> KMeans</span><br><span class="line"><span class="keyword">import</span> folium</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="comment"># Load data</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">data = pd.read_excel(<span class="string">"./数据集/运输节点数据.xlsx"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># Color options</span></span><br><span class="line">color_options = &#123;<span class="string">'demand'</span>: <span class="string">'#ff4500'</span>,</span><br><span class="line">                 <span class="string">'supply'</span>: <span class="string">'#3de1ad'</span>,</span><br><span class="line">                 <span class="string">'flow'</span>: <span class="string">'black'</span>,</span><br><span class="line">                 <span class="string">'cog'</span>: <span class="string">'#fa8072'</span>,</span><br><span class="line">                 <span class="string">'candidate'</span>: <span class="string">'blue'</span>,</span><br><span class="line">                 <span class="string">'other'</span>: <span class="string">'gray'</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#创建一个地图对象</span></span><br><span class="line">map_china = folium.Map(</span><br><span class="line">                location=data[[<span class="string">'纬度'</span>, <span class="string">'经度'</span>]].mean()</span><br><span class="line">                ,fit_bounds=[[data[<span class="string">'纬度'</span>].min(),</span><br><span class="line">                            data[<span class="string">'经度'</span>].min()], </span><br><span class="line">                           [data[<span class="string">'纬度'</span>].max(),</span><br><span class="line">                            data[<span class="string">'经度'</span>].max()]]</span><br><span class="line">               ,tiles=<span class="string">'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;'</span></span><br><span class="line">                ,attr=<span class="string">"&amp;copy; &lt;a href=http://ditu.amap.com/&gt;高德地图-@Pyscm&lt;/a&gt;"</span></span><br><span class="line">               , zoom_start=<span class="number">5</span></span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># V读取中国地图省市区边界</span></span><br><span class="line">vis = os.path.join(<span class="string">'数据集'</span>, <span class="string">'china.json'</span>)</span><br><span class="line">china_border = json.load(open(vis,encoding=<span class="string">"utf-8"</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">#应用地图边界</span></span><br><span class="line">folium.GeoJson(china_border</span><br><span class="line">              , style_function=<span class="keyword">lambda</span> feature: &#123;</span><br><span class="line">        <span class="string">"color"</span>: <span class="string">"blue"</span>,</span><br><span class="line">        <span class="string">"weight"</span>: <span class="number">0.2</span>,</span><br><span class="line">        <span class="string">"dashArray"</span>: <span class="string">"3, 3"</span>,  <span class="comment">#边界线设置</span></span><br><span class="line">    &#125;,  ).add_to(map_china)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                            </span><br><span class="line"><span class="comment"># Add volume points</span></span><br><span class="line"><span class="keyword">for</span> _, row <span class="keyword">in</span> data.iterrows():</span><br><span class="line">    folium.CircleMarker(location=[row[<span class="string">'纬度'</span>], </span><br><span class="line">                                  row[<span class="string">'经度'</span>]],</span><br><span class="line">                        radius=(row[<span class="string">'日均出发'</span>]**<span class="number">0.4</span>),</span><br><span class="line">                        color=color_options.get(str(row[<span class="string">'分拨类型'</span>]).lower(), <span class="string">'gray'</span>),</span><br><span class="line">                        fill_color=color_options.get(str(row[<span class="string">'分拨类型'</span>]).lower(), <span class="string">'gray'</span>),</span><br><span class="line">                        tooltip=str(row[<span class="string">'分拨名称'</span>])+<span class="string">'：'</span>+str(int(row[<span class="string">'日均出发'</span>]))+<span class="string">'吨'</span>).add_to(map_china)</span><br><span class="line"></span><br><span class="line">        </span><br><span class="line"><span class="comment"># 缩放程度根据地图点数</span></span><br><span class="line">map_china.fit_bounds(data[[<span class="string">'纬度'</span>, <span class="string">'经度'</span>]].values.tolist())</span><br><span class="line"><span class="comment"># Show the map</span></span><br><span class="line">map_china</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s1.ax1x.com/2022/05/15/O27sOI.png" alt="O27sOI.png"></p>
+<h3 id="添加业务规则2"><a href="#添加业务规则2" class="headerlink" title="添加业务规则2"></a>添加业务规则2</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 出境货物的成本是入境货物的两倍</span></span><br><span class="line">IB_OB_ratio = <span class="number">2</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loc_type_mult</span><span class="params">(x)</span>:</span></span><br><span class="line">    <span class="string">"""A function to get the volume multiplier based on the location type and the IB-OB ratio.</span></span><br><span class="line"><span class="string">    x: The location type</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">if</span> x.lower() == <span class="string">'supply'</span>:</span><br><span class="line">        <span class="comment"># No need to divide since we are already multiplying the demand</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">elif</span> x.lower() == <span class="string">'demand'</span>:</span><br><span class="line">        <span class="comment"># Only apply multiplier to demand</span></span><br><span class="line">        <span class="keyword">return</span> IB_OB_ratio</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># If neither supply nor demand, remove entirely</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"><span class="comment"># Adjust volumes used in the computation based on IB-OB ratio</span></span><br><span class="line">data[<span class="string">'修正日均出发'</span>] = data[<span class="string">'分拨类型'</span>].apply(str).apply(loc_type_mult)*data[<span class="string">'日均出发'</span>]</span><br><span class="line"></span><br><span class="line">data.head()</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="center">id</th>
+<th align="center">分拨名称</th>
+<th>日均出发</th>
+<th align="center">日均到达</th>
+<th align="center">出到比</th>
+<th align="center">经度</th>
+<th align="center">纬度</th>
+<th align="center">分拨类型</th>
+<th align="center">修正日均出发</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">安康市</td>
+<td>48.264351</td>
+<td align="center">49.063856</td>
+<td align="center">0.983705</td>
+<td align="center">109.029273</td>
+<td align="center">32.690300</td>
+<td align="center">demand</td>
+<td align="center">96.528701</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">安庆市</td>
+<td>14.747557</td>
+<td align="center">30.851165</td>
+<td align="center">0.478023</td>
+<td align="center">117.043551</td>
+<td align="center">30.508830</td>
+<td align="center">demand</td>
+<td align="center">29.495114</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">安顺市</td>
+<td>122.742896</td>
+<td align="center">161.550340</td>
+<td align="center">0.759781</td>
+<td align="center">105.932188</td>
+<td align="center">26.245544</td>
+<td align="center">supply</td>
+<td align="center">122.742896</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">安阳市</td>
+<td>65.513392</td>
+<td align="center">49.091857</td>
+<td align="center">1.334506</td>
+<td align="center">114.352482</td>
+<td align="center">36.103442</td>
+<td align="center">demand</td>
+<td align="center">131.026784</td>
+</tr>
+</tbody></table>
+<h3 id="聚类-amp-可视化-运输节点归属连接信息"><a href="#聚类-amp-可视化-运输节点归属连接信息" class="headerlink" title="聚类&amp;可视化-运输节点归属连接信息"></a>聚类&amp;可视化-运输节点归属连接信息</h3><p>下面的代码块显示了求解重心的不同方法。Itertools用于遍历所有可能的仓库位置组合，以获得将运输成本降至最低的组合。下面的代码根据每个潜在位置组合的相对运输成本加权的距离计算总估计运输成本，并保存使该估计成本最小化的位置组合：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">cands = data.loc[data[<span class="string">'分拨类型'</span>].str.lower()==<span class="string">'candidate'</span>]</span><br><span class="line">locs = data.loc[data[<span class="string">'修正日均出发'</span>]&gt;<span class="number">0</span>]</span><br><span class="line">total_dist = np.inf</span><br><span class="line">best_cogs = []</span><br><span class="line"></span><br><span class="line"><span class="comment">#聚类的数量点，在候选点数量里选择</span></span><br><span class="line">n=<span class="number">30</span></span><br><span class="line"><span class="comment"># Loop to find best combination of candidate sites</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm(list(combinations(cands.index, n))):</span><br><span class="line">    temp_cands = cands.loc[list(i)]</span><br><span class="line">    locs[<span class="string">"聚类节点"</span>] = <span class="number">0</span></span><br><span class="line">    locs[<span class="string">'Distance_COG'</span>] = np.inf</span><br><span class="line">    <span class="keyword">for</span> i_l, r_l <span class="keyword">in</span> locs.iterrows():</span><br><span class="line">        <span class="keyword">for</span> i_c, r_c <span class="keyword">in</span> temp_cands.iterrows():</span><br><span class="line">            <span class="comment"># Get distance</span></span><br><span class="line">            dist = (r_l[<span class="string">'纬度'</span>]-r_c[<span class="string">'纬度'</span>])**<span class="number">2</span></span><br><span class="line">            dist += (r_l[<span class="string">'经度'</span>]-r_c[<span class="string">'经度'</span>])**<span class="number">2</span></span><br><span class="line">            dist **= <span class="number">0.5</span></span><br><span class="line">            <span class="comment"># Save values if distance is shorter</span></span><br><span class="line">            <span class="keyword">if</span> dist &lt; locs.loc[i_l, <span class="string">'Distance_COG'</span>]:</span><br><span class="line">                <span class="comment"># Save distance</span></span><br><span class="line">                locs.loc[i_l, <span class="string">'Distance_COG'</span>] = dist</span><br><span class="line">                <span class="comment"># Save index of nearest point</span></span><br><span class="line">                locs.loc[i_l, <span class="string">'聚类节点'</span>] = i_c</span><br><span class="line">    <span class="comment"># Weight distance by volume</span></span><br><span class="line">    locs[<span class="string">'Weighted_Distance_COG'</span>] = locs[<span class="string">'Distance_COG'</span>] * locs[<span class="string">'修正日均出发'</span>]</span><br><span class="line">    <span class="comment"># Save scenario if total weighted distance is smaller</span></span><br><span class="line">    <span class="keyword">if</span> locs[<span class="string">'Weighted_Distance_COG'</span>].sum() &lt; total_dist:</span><br><span class="line">        total_dist = locs[<span class="string">'Weighted_Distance_COG'</span>].sum()</span><br><span class="line">        best_cogs = list(list(i))</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line"><span class="comment"># Get centers of gravity</span></span><br><span class="line">cogs = cands.loc[best_cogs, [<span class="string">'纬度'</span>,<span class="string">'经度'</span>]]</span><br><span class="line"><span class="comment"># Reloop to get site assignment</span></span><br><span class="line">locs[<span class="string">'聚类节点'</span>] = <span class="number">0</span></span><br><span class="line">locs[<span class="string">'Distance_COG'</span>] = np.inf</span><br><span class="line"><span class="keyword">for</span> i_l, r_l <span class="keyword">in</span> locs.iterrows():</span><br><span class="line">    <span class="keyword">for</span> i_c, r_c <span class="keyword">in</span> cogs.iterrows():</span><br><span class="line">        <span class="comment"># Get distance</span></span><br><span class="line">        dist = (r_l[<span class="string">'纬度'</span>]-r_c[<span class="string">'纬度'</span>])**<span class="number">2</span></span><br><span class="line">        dist += (r_l[<span class="string">'经度'</span>]-r_c[<span class="string">'经度'</span>])**<span class="number">2</span></span><br><span class="line">        dist **= <span class="number">0.5</span></span><br><span class="line">        <span class="comment"># Save values if distance is shorter</span></span><br><span class="line">        <span class="keyword">if</span> dist &lt; locs.loc[i_l, <span class="string">'Distance_COG'</span>]:</span><br><span class="line">            <span class="comment"># Save distance</span></span><br><span class="line">            locs.loc[i_l, <span class="string">'Distance_COG'</span>] = dist</span><br><span class="line">            <span class="comment"># Save index of nearest point</span></span><br><span class="line">            locs.loc[i_l, <span class="string">'聚类节点'</span>] = i_c</span><br><span class="line"><span class="comment"># Get volume assigned to each cog</span></span><br><span class="line">cogs = cogs.join(locs.groupby(<span class="string">'聚类节点'</span>)[<span class="string">'日均出发'</span>].sum())</span><br><span class="line"><span class="comment"># Include assigned COG coordinates in data by point </span></span><br><span class="line">data = data.join(locs[<span class="string">'聚类节点'</span>])</span><br><span class="line">data = data.join(cogs, on=<span class="string">'聚类节点'</span>, rsuffix=<span class="string">'_COG'</span>)</span><br><span class="line"></span><br><span class="line">data.head()</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="center">分拨名称</th>
+<th align="center">日均出发</th>
+<th align="center">日均到达</th>
+<th align="center">出到比</th>
+<th align="center">经度</th>
+<th align="center">纬度</th>
+<th align="center">分拨类型</th>
+<th align="center">修正日均出发</th>
+<th align="center">聚类节点</th>
+<th align="center">纬度_COG</th>
+<th align="center">经度_COG</th>
+<th align="center">日均出发_COG</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">安康市</td>
+<td align="center">48.264351</td>
+<td align="center">49.063856</td>
+<td align="center">0.983705</td>
+<td align="center">109.029273</td>
+<td align="center">32.690300</td>
+<td align="center">demand</td>
+<td align="center">96.528701</td>
+<td align="center">277.0</td>
+<td align="center">35.022778</td>
+<td align="center">111.003957</td>
+<td align="center">1509.189662</td>
+</tr>
+<tr>
+<td align="center">安庆市</td>
+<td align="center">14.747557</td>
+<td align="center">30.851165</td>
+<td align="center">0.478023</td>
+<td align="center">117.043551</td>
+<td align="center">30.508830</td>
+<td align="center">demand</td>
+<td align="center">29.495114</td>
+<td align="center">289.0</td>
+<td align="center">32.204402</td>
+<td align="center">119.452753</td>
+<td align="center">2289.858458</td>
+</tr>
+<tr>
+<td align="center">安顺市</td>
+<td align="center">122.742896</td>
+<td align="center">161.550340</td>
+<td align="center">0.759781</td>
+<td align="center">105.932188</td>
+<td align="center">26.245544</td>
+<td align="center">supply</td>
+<td align="center">122.742896</td>
+<td align="center">300.0</td>
+<td align="center">27.706626</td>
+<td align="center">106.937265</td>
+<td align="center">319.915649</td>
+</tr>
+<tr>
+<td align="center">安阳市</td>
+<td align="center">65.513392</td>
+<td align="center">49.091857</td>
+<td align="center">1.334506</td>
+<td align="center">114.352482</td>
+<td align="center">36.103442</td>
+<td align="center">demand</td>
+<td align="center">131.026784</td>
+<td align="center">286.0</td>
+<td align="center">36.191112</td>
+<td align="center">113.113556</td>
+<td align="center">665.228732</td>
+</tr>
+</tbody></table>
+<p>与上一节类似，下面的代码块在 Leaflet 地图上使用 Folium 绘制了生成的重心，以及指示从拟议仓库位置到供需站点的交付路线的线条：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">fdata = data.loc[data[<span class="string">"纬度_COG"</span>].notna()]</span><br><span class="line"><span class="comment"># 添加聚类的点坐标到地图中，并添加连线</span></span><br><span class="line"><span class="keyword">for</span> _, row <span class="keyword">in</span> fdata.iterrows():</span><br><span class="line">    <span class="comment"># Flow lines</span></span><br><span class="line">    <span class="keyword">if</span> str(row[<span class="string">'分拨类型'</span>]).lower() <span class="keyword">in</span> ([<span class="string">'demand'</span>, <span class="string">'supply'</span>]):</span><br><span class="line">        folium.PolyLine([(row[<span class="string">'纬度'</span>],</span><br><span class="line">                          row[<span class="string">'经度'</span>]),</span><br><span class="line">                         (row[<span class="string">'纬度_COG'</span>],</span><br><span class="line">                          row[<span class="string">'经度_COG'</span>])],</span><br><span class="line">                        color=color_options[<span class="string">'flow'</span>],</span><br><span class="line">                        weight=(row[<span class="string">'日均出发'</span>]**<span class="number">0.3</span>),</span><br><span class="line">                        opacity=<span class="number">0.8</span>).add_to(map_china)</span><br><span class="line">                        </span><br><span class="line"><span class="comment"># Add centers of gravity to map</span></span><br><span class="line"><span class="keyword">for</span> _, row <span class="keyword">in</span> cogs.iterrows():</span><br><span class="line">    <span class="comment"># New centers of gravity</span></span><br><span class="line">    folium.CircleMarker(location=[row[<span class="string">'纬度'</span>],</span><br><span class="line">                                  row[<span class="string">'经度'</span>]],</span><br><span class="line">                        radius=(row[<span class="string">'日均出发'</span>]**<span class="number">0.4</span>),</span><br><span class="line">                        color=color_options[<span class="string">'cog'</span>],</span><br><span class="line">                        fill_color=color_options[<span class="string">'cog'</span>],</span><br><span class="line">                        tooltip=row[<span class="string">'日均出发'</span>]).add_to(map_china)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 展示地图</span></span><br><span class="line">map_china</span><br></pre></td></tr></table></figure>
+
+<p>[<img src="https://s1.ax1x.com/2022/05/15/O274pQ.png" alt="O274pQ.png"></p>
+<p>对于样本数据，算法从候选点集合中选择了30个物流中心可视化在地图上</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><blockquote>
+<p>参考1：<a href="https://medium.com/analytics-vidhya/logistics-center-of-gravity-analysis-in-python-a21ad034f849" target="_blank" rel="noopener">https://medium.com/analytics-vidhya/logistics-center-of-gravity-analysis-in-python-a21ad034f849</a><br>参考2： <a href="https://medium.com/datasciencearth/map-visualization-with-folium-d1403771717" target="_blank" rel="noopener">https://medium.com/datasciencearth/map-visualization-with-folium-d1403771717</a></p>
+</blockquote>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%8F%AF%E8%A7%86%E5%8C%96/">可视化</a><a class="post-meta__tags" href="/tags/%E7%89%A9%E6%B5%81%E9%80%89%E5%9D%80/">物流选址</a><a class="post-meta__tags" href="/tags/%E9%87%8D%E5%BF%83%E6%B3%95/">重心法</a><a class="post-meta__tags" href="/tags/kmeans/">kmeans</a><a class="post-meta__tags" href="/tags/folium/">folium</a><a class="post-meta__tags" href="/tags/%E5%9C%B0%E5%9B%BE/">地图</a></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/Conda%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/"><img class="next-cover" src="https://pic2.zhimg.com/v2-d756eea109e0bf5fd473cf88c4f95b38_1440w.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Conda使用技巧总结</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/posts/helloword/" title="Hello World,Pyscm!"><img class="relatedPosts_cover" src="https://cdn.jsdelivr.net/gh/HCLonely/hclonely.github.io/img/Butterfly/006.webp"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-07</div><div class="relatedPosts_title">Hello World,Pyscm!</div></div></a></div><div class="relatedPosts_item"><a href="/posts/航空客户挖掘kmeans聚类/" title="航空客户挖掘kmeans聚类"><img class="relatedPosts_cover" src="https://s1.ax1x.com/2022/05/12/OD9qUK.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-12</div><div class="relatedPosts_title">航空客户挖掘kmeans聚类</div></div></a></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022  <i id="heartbeat" class="fa fas fa-heartbeat"></i> Pyscm</div><div class="framework-info"><span>驱动 </span><a href="https://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener"><span>Butterfly</span></a></div></div><head><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"><meta name="generator" content="Hexo 4.2.0"></head></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="translateLink" type="button" title="简繁转换">簡</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="/js/calendar.js"></script><script src="/js/languages.js"></script></body></html>
